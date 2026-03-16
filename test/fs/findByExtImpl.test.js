@@ -12,13 +12,21 @@ const { describe, it } = await (async () => {
 
 describe("findByExtImpl.test.js", () => {
   it("should return empty array if no matching files found", async () => {
-    //given
-    const extensions = new Set(".txt");
-
     //when
-    const result = await findByExtImpl(extensions);
+    const result = await findByExtImpl([], "./test");
 
     //then
     deepEqual(result, []);
   });
+
+  // it("should return non-empty array if matching files found", async () => {
+  //   //when
+  //   const result = await findByExtImpl(
+  //     ["node", "./scrip.js", "--ext", "js"],
+  //     "./test",
+  //   );
+
+  //   //then
+  //   deepEqual(result.length > 0, true);
+  // });
 });
