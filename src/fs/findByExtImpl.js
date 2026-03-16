@@ -1,5 +1,6 @@
 import path from "path";
 import { readdir, stat } from "fs/promises";
+import { parseArgs } from "../utils.js";
 
 /**
  * @param {readonly string[]} processArgs
@@ -8,11 +9,12 @@ import { readdir, stat } from "fs/promises";
  */
 async function findByExtImpl(processArgs, dir) {
   const extensions = new Set([".txt"]);
-  const parsedArgs = parseArgs(processArgs);
-  if (parsedArgs.length > 0) {
+  const parsedExts = parseArgs(processArgs, "--ext");
+  if (parsedExts.length > 0) {
     extensions.clear();
-    parsedArgs.forEach((_) => {
-      extensions.add(_);
+    parsedExts.forEach((_) => {
+      const ext = _.trim();
+      extensions.add(ext.startsWith(".") ? ext : `.${ext}`);
     });
   }
 
@@ -44,26 +46,6 @@ async function findByExtImpl(processArgs, dir) {
   }
 
   return loop(path.resolve(dir), "", []);
-}
-
-/** @type {(processArgs: readonly string[]) => readonly string[]} */
-function parseArgs(processArgs) {
-  /** @type {string[]} */
-  const result = [];
-
-  if (processArgs.length > 2) {
-    const arg1 = processArgs[2];
-    if (arg1.trim() === "--ext" && processArgs.length > 3) {
-      const arg2 = processArgs[3];
-
-      arg2.split(",").forEach((_) => {
-        const ext = _.trim();
-        result.push(ext.startsWith(".") ? ext : `.${ext}`);
-      });
-    }
-  }
-
-  return result;
 }
 
 export default findByExtImpl;
