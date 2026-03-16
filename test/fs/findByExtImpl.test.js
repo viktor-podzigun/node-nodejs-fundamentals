@@ -19,14 +19,18 @@ describe("findByExtImpl.test.js", () => {
     deepEqual(result, []);
   });
 
-  // it("should return non-empty array if matching files found", async () => {
-  //   //when
-  //   const result = await findByExtImpl(
-  //     ["node", "./scrip.js", "--ext", "js"],
-  //     "./test",
-  //   );
+  it("should return non-empty array if matching files found", async () => {
+    //when
+    const result = await findByExtImpl(
+      ["node", "./scrip.js", "--ext", "js,.mjs"],
+      "./test",
+    );
 
-  //   //then
-  //   deepEqual(result.length > 0, true);
-  // });
+    //then
+    deepEqual(result.length > 0, true);
+    deepEqual(
+      result,
+      result.filter((_) => _.endsWith(".js")),
+    );
+  });
 });

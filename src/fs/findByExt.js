@@ -5,7 +5,7 @@ const findByExt = async () => {
   // Recursively find all files with specific extension
   // Parse --ext CLI argument (default: .txt)
   const files = await findByExtImpl(process.argv, ".");
-  files.forEach(console.log);
+  files.forEach((_) => console.log(_));
 };
 
 await findByExt();
