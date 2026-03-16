@@ -1,3 +1,6 @@
+[![CI](https://github.com/viktor-podzigun/node-nodejs-fundamentals/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/viktor-podzigun/node-nodejs-fundamentals/actions/workflows/ci.yml?query=workflow%3Aci+branch%3Amaster)
+[![Coverage Status](https://coveralls.io/repos/github/viktor-podzigun/node-nodejs-fundamentals/badge.svg?branch=master)](https://coveralls.io/github/viktor-podzigun/node-nodejs-fundamentals?branch=master)
+
 # Node.js Fundamentals
 
 ## Description
@@ -7,24 +10,24 @@ This repository contains solutions for Node.js Fundamentals assignment. The assi
 ## Getting Started
 
 1. **Fork this repository**
-   
+
    Click the "Fork" button at the top right of this page: https://github.com/AlreadyBored/node-nodejs-fundamentals
 
 2. **Clone your fork**
-   
+
    ```bash
    git clone https://github.com/YOUR_USERNAME/node-nodejs-fundamentals.git
    cd node-nodejs-fundamentals
    ```
 
 3. **Install dependencies** (if any added in the future)
-   
+
    ```bash
    npm install
    ```
 
 4. **Start implementing the tasks**
-   
+
    Each file in the `src/` directory contains a function template with comments describing what needs to be implemented.
 
 ## Requirements

@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    paths-ignore:
+      - "*.md"
+    branches: [master]
+    tags:
+      - "*"
+  pull_request:
+    branches: [master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          registry-url: "https://registry.npmjs.org"
+      #        cache: 'npm'
+      #        cache-dependency-path: '**/package-lock.json'
+
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.npm
+            ~/.nvm
+            ~/work/node-nodejs-fundamentals/node-nodejs-fundamentals/node_modules
+            ~/work/node-nodejs-fundamentals/node-nodejs-fundamentals/package-lock.json
+          key: ${{ runner.os }}-node_modules-cache-v1-${{ hashFiles('package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node_modules-cache-v1-
+
+      - name: Run tests
+        run: |
+          npm i
+          npx tsc
+          npx quick-lint-js ./**/*.js
+          npm run formatCheck
+          NODE_V8_COVERAGE=coverage0 npx c8 -r lcovonly --all --exclude "test/**" node --experimental-test-coverage ./test/all.mjs
+
+      - name: Report coverage to Coveralls
+        uses: coverallsapp/github-action@v2

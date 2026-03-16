@@ -4,7 +4,8 @@
   "description": "Node.js Fundamentals assignment repository",
   "engines": {
     "node": ">=24.10.0",
-    "npm": ">=10.9.2"
+    "npm": ">=10.9.2",
+    "bun": ">=1"
   },
   "type": "module",
   "scripts": {
@@ -22,7 +23,11 @@
     "zip:compressDir": "node src/zip/compressDir.js",
     "zip:decompressDir": "node src/zip/decompressDir.js",
     "wt:main": "node src/wt/main.js",
-    "cp:execCommand": "node src/cp/execCommand.js \"echo 'Hello World'\""
+    "cp:execCommand": "node src/cp/execCommand.js \"echo 'Hello World'\"",
+    "lint": "quick-lint-js ./**/*.js",
+    "test": "tsc && bun test && node ./test/all.js",
+    "format": "prettier **/*.js --write",
+    "formatCheck": "prettier **/*.js --check"
   },
   "repository": {
     "type": "git",
@@ -33,6 +38,13 @@
     "fundamentals",
     "assignments"
   ],
-  "author": "alreadybored",
-  "license": "ISC"
+  "author": "viktorpodzigun",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^16.18.126",
+    "c8": "^7.14.0",
+    "prettier": "^3.8.1",
+    "quick-lint-js": "^3.2.0",
+    "typescript": "^5.9.3"
+  }
 }
