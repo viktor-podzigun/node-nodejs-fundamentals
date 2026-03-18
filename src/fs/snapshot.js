@@ -33,23 +33,29 @@ const snapshot = async () => {
 `;
   await appendFile(snapshotFile, header);
 
+  const entrySep = ",\n";
   let isFirstEntry = true;
-  await scanDirs(rootPath, async (rel, item, stat) => {
-    const entryPath = path.join(rel, item);
-    const maybeSep = isFirstEntry ? "" : ",\n";
-    isFirstEntry = false;
+  await scanDirs(rootPath, async (dir, files, onNextDir) => {
+    if (dir !== "") {
+      const dirEntry = `${entrySep}    { "path": "${dir}", "type": "directory" }`;
+      await appendFile(snapshotFile, dirEntry);
+    }
 
-    const entry = await (async () => {
-      if (stat.isDirectory()) {
-        return `${maybeSep}    { "path": "${entryPath}", "type": "directory" }`;
-      }
+    await files.reduce(async (resP, { name, stat }) => {
+      await resP;
 
-      const content = await readFile(path.join(rootPath, rel, item));
+      const maybeSep = isFirstEntry ? "" : ",\n";
+      isFirstEntry = false;
+
+      const entryPath = path.join(dir, name);
+      const content = await readFile(path.join(rootPath, dir, name));
       const base64Content = content.toString("base64");
-      return `${maybeSep}    { "path": "${entryPath}", "type": "file", "size": ${stat.size}, "content": "${base64Content}" }`;
-    })();
+      const fileEntry = `${maybeSep}    { "path": "${entryPath}", "type": "file", "size": ${stat.size}, "content": "${base64Content}" }`;
 
-    await appendFile(snapshotFile, entry);
+      await appendFile(snapshotFile, fileEntry);
+    }, Promise.resolve());
+
+    await onNextDir();
   });
 
   const footer = `

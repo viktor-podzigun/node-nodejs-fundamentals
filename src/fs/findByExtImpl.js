@@ -20,14 +20,16 @@ async function findByExtImpl(processArgs, dir) {
   /** @type {string[]} */
   const result = [];
 
-  await scanDirs(path.resolve(dir), async (rel, item, stat) => {
-    if (!stat.isDirectory()) {
-      const extIdx = item.lastIndexOf(".");
-      const ext = extIdx >= 0 ? item.substring(extIdx) : item;
+  await scanDirs(path.resolve(dir), async (dir, files, onNextDir) => {
+    files.forEach(({ name }) => {
+      const extIdx = name.lastIndexOf(".");
+      const ext = extIdx >= 0 ? name.substring(extIdx) : name;
       if (extensions.has(ext)) {
-        result.push(path.join(rel, item));
+        result.push(path.join(dir, name));
       }
-    }
+    });
+
+    await onNextDir();
   });
 
   return result;

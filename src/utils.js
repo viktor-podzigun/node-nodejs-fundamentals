@@ -1,8 +1,15 @@
 /**
  * @import nodeFs from "fs"
  */
-import path from "path";
+import path from "path/posix";
 import { readdir, stat } from "fs/promises";
+
+/**
+ * @typedef {{
+ *  readonly name: string;
+ *  readonly stat: nodeFs.Stats;
+ * }} DirFileItem
+ */
 
 /**
  * @param {readonly string[]} processArgs
@@ -29,28 +36,29 @@ export function parseArgs(processArgs, argName, valueSep = ",") {
 
 /**
  * @param {string} rootPath
- * @param {(rel: String, item: String, stat: nodeFs.Stats) => Promise<void>} onDirItem
+ * @param {(dir: string, files: readonly DirFileItem[], onNextDir: () => Promise<void>) => Promise<void>} onDirItems
  * @returns {Promise<void>}
  */
-export async function scanDirs(rootPath, onDirItem) {
-  /** @type {(rel: string) => Promise<void>} */
-  async function loop(rel) {
-    const items = await readdir(path.join(rootPath, rel));
-    const stats = await Promise.all(
-      items.map(async (item) => {
-        const s = await stat(path.join(rootPath, rel, item));
-        return { item, stat: s };
+export async function scanDirs(rootPath, onDirItems) {
+  /** @type {(dir: string) => Promise<void>} */
+  async function loop(dir) {
+    const names = await readdir(path.join(rootPath, dir));
+    const items = await Promise.all(
+      names.map(async (name) => {
+        const s = await stat(path.join(rootPath, dir, name));
+        return { name, stat: s };
       }),
     );
 
-    await stats.reduce(async (resP, { item, stat }) => {
-      await resP;
-      await onDirItem(rel, item, stat);
+    const dirs = items.filter((_) => _.stat.isDirectory());
+    const files = items.filter((_) => !_.stat.isDirectory());
 
-      if (stat.isDirectory()) {
-        await loop(path.join(rel, item));
-      }
-    }, /** @type {Promise<void>} */ (Promise.resolve()));
+    await onDirItems(dir, files, async () => {
+      await dirs.reduce(async (resP, { name }) => {
+        await resP;
+        await loop(path.join(dir, name));
+      }, Promise.resolve());
+    });
   }
 
   await loop("");
