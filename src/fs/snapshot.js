@@ -45,7 +45,8 @@ const snapshot = async () => {
       }
 
       const content = await readFile(path.join(rootPath, rel, item));
-      return `${maybeSep}    { "path": "${entryPath}", "type": "file", "size": ${stat.size}, "content": "${content.toString("base64")}" }`;
+      const base64Content = content.toString("base64");
+      return `${maybeSep}    { "path": "${entryPath}", "type": "file", "size": ${stat.size}, "content": "${base64Content}" }`;
     })();
 
     await appendFile(snapshotFile, entry);
