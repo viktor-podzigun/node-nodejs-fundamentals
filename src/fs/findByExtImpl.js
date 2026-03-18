@@ -1,6 +1,5 @@
 import path from "path";
-import { readdir, stat } from "fs/promises";
-import { parseArgs } from "../utils.js";
+import { parseArgs, scanDirs } from "../utils.js";
 
 /**
  * @param {readonly string[]} processArgs
@@ -18,34 +17,20 @@ async function findByExtImpl(processArgs, dir) {
     });
   }
 
-  /** @type {(dir: string, rel: string, result: string[]) => Promise<readonly string[]>} */
-  async function loop(dir, rel, result) {
-    const items = await readdir(path.join(dir, rel));
-    const stats = await Promise.all(
-      items.map(async (item) => {
-        const s = await stat(path.join(dir, rel, item));
-        return { item, stat: s };
-      }),
-    );
+  /** @type {string[]} */
+  const result = [];
 
-    await stats.reduce(async (resP, { item, stat }) => {
-      await resP;
-      if (stat.isDirectory()) {
-        await loop(dir, path.join(rel, item), result);
-        return;
-      }
-
+  await scanDirs(path.resolve(dir), async (rel, item, stat) => {
+    if (!stat.isDirectory()) {
       const extIdx = item.lastIndexOf(".");
       const ext = extIdx >= 0 ? item.substring(extIdx) : item;
       if (extensions.has(ext)) {
         result.push(path.join(rel, item));
       }
-    }, /** @type {Promise<void>} */ (Promise.resolve()));
+    }
+  });
 
-    return result;
-  }
-
-  return loop(path.resolve(dir), "", []);
+  return result;
 }
 
 export default findByExtImpl;
