@@ -1,4 +1,4 @@
-import path from "path";
+import path from "path/posix";
 import { existsSync } from "fs";
 import { appendFile, readFile, unlink } from "fs/promises";
 import { scanDirs } from "../utils.js";
