@@ -2,7 +2,7 @@
  * @import nodeFs from "fs"
  */
 import path from "path/posix";
-import { readdir, stat } from "fs/promises";
+import { readdir, rmdir, stat, unlink } from "fs/promises";
 
 /**
  * @typedef {{
@@ -62,4 +62,20 @@ export async function scanDirs(rootPath, onDirItems) {
   }
 
   await loop("");
+}
+
+/**
+ * @param {string} rootPath
+ * @returns {Promise<void>}
+ */
+export async function deleteDirs(rootPath) {
+  await scanDirs(rootPath, async (dir, files, onNextDir) => {
+    await files.reduce(async (resP, { name }) => {
+      await resP;
+      await unlink(path.join(rootPath, dir, name));
+    }, Promise.resolve());
+
+    await onNextDir();
+    await rmdir(path.join(rootPath, dir));
+  });
 }

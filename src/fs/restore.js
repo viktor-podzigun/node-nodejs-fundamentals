@@ -1,7 +1,8 @@
 import path from "path";
-import fs from "fs";
+import fs, { existsSync } from "fs";
 import { mkdir, writeFile } from "fs/promises";
 import readline from "readline";
+import { deleteDirs } from "../utils.js";
 
 /**
  * @typedef {SnapshotDirEntry | SnapshotFileEntry} SnapshotEntry
@@ -40,6 +41,9 @@ const restore = async () => {
 `entries[].path` values must be relative to `workspace`.
    */
   const rootPath = "./workspace_restored";
+  if (existsSync(rootPath)) {
+    await deleteDirs(rootPath);
+  }
   await mkdir(rootPath, { recursive: true });
 
   const rl = readline.createInterface({
