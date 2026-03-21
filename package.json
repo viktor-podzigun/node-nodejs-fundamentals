@@ -24,7 +24,7 @@
     "zip:decompressDir": "node src/zip/decompressDir.js",
     "wt:main": "node src/wt/main.js",
     "cp:execCommand": "node src/cp/execCommand.js \"echo 'Hello World'\"",
-    "lint": "quick-lint-js ./**/*.js",
+    "lint": "quick-lint-js ./src/**/*.js ./test/**/*.js",
     "test": "tsc && bun test && node ./test/all.js",
     "format": "prettier **/*.js --write",
     "formatCheck": "prettier **/*.js --check"
